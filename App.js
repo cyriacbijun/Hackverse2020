@@ -11,7 +11,7 @@ var firebaseConfig = {
     messagingSenderId: "98768578088",
     appId: "1:98768578088:web:489508f4709fe575efb71d",
     measurementId: "G-PJ2JH3BBEP"
-  };
+};
 firebase.initializeApp(firebaseConfig);
 const mapStyles = {
   width: '100%',
@@ -25,10 +25,11 @@ export class MapContainer extends Component {
             showingInfoWindow: false,
             activeMarker: {},
             selectedPlace: {},
-            location : {lat: 10.021184, lng:72.329720}
-        };
+            location : {lat: 10.021184, lng:76.329720}
+        }
         this.onMarkerClick = this.onMarkerClick.bind(this);
         this.onMapClick = this.onMapClick.bind(this);
+        //this.getUserData= this.getUserData.bind(this);
     }
     componentDidMount() {
         let locationref = firebase.database().ref().child('location');
@@ -38,6 +39,58 @@ export class MapContainer extends Component {
         });
         console.log('DATA RETRIEVED Latitute',locationref);
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.location !== this.state.location) {
+            this.recenterMap();
+        }
+    }
+    // loadMap() {
+    //     if (this.props && this.props.google) {
+    //         const {google} = this.props;
+    //         const maps = google.maps;
+    //
+    //         const mapRef = this.refs.map;
+    //         const node = ReactDOM.findDOMNode(mapRef);
+    //
+    //         let {initialCenter, zoom} = this.props;
+    //         const {lat, lng} = initialCenter;
+    //         const center = new maps.LatLng(lat, lng);
+    //         const mapConfig = Object.assign({}, {
+    //             center: center,
+    //             zoom: zoom
+    //         })
+    //         this.map = new maps.Map(node, mapConfig);
+    //         const latitude = this.state.latitude;
+    //         const longitude = this.state.longitude;
+    //     }
+    //     // ...
+    // }
+    // getUserData = () => {
+    //     let latref = firebase.database().ref('/latitude');
+    //     let longref = firebase.database().ref('/longitude');
+    //     latref.on('value', snapshot => {
+    //         const latitude_here = snapshot.val();
+    //         this.setState({latitude:latitude_here});
+    //     });
+    //     longref.on('value', snapshot => {
+    //         const longitude_here = snapshot.val();
+    //         this.setState({longitude:longitude_here});
+    //     });
+    //     //console.log('DATA RETRIEVED Latitute',latref,longref);
+    // };
+    recenterMap = () => {
+        const map = this.map;
+        const lat = this.state.location.lat;
+        const long = this.state.location.lng;
+        console.log('the map object',this.props.google);
+        const google = this.props.google;
+        const maps = google.maps;
+
+        if (map) {
+            let center = new maps.LatLng(lat, long);
+            map.panTo(center)
+        }
+    };
     onMarkerClick = (props, marker, e) =>
         this.setState({
             selectedPlace: props,
@@ -56,13 +109,12 @@ export class MapContainer extends Component {
     return (
         <Map
             google={this.props.google}
-            zoom={20}
+            zoom={14}
             style={mapStyles}
             center={this.state.location}>
             <Marker
-                position = {this.state.location}
                 onClick={this.onMarkerClick}
-                name={'Current Location'}
+                name={'National Institute of Technology Karnataka Surathkal.'}
             />
             <InfoWindow
                 marker={this.state.activeMarker}
